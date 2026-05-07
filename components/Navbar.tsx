@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase/client'
+import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
@@ -14,10 +15,7 @@ export function Navbar() {
     const getUser = async () => {
       try {
         const supabase = createSupabaseClient()
-        // Check if Supabase is properly configured
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-        if (!supabaseUrl || supabaseUrl === 'your_supabase_project_url_here') {
-          // Supabase not configured, skip auth check
+        if (!isSupabaseConfigured()) {
           return
         }
         
@@ -34,22 +32,20 @@ export function Navbar() {
     }
     getUser()
 
-    try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-      if (supabaseUrl && supabaseUrl !== 'your_supabase_project_url_here') {
-        const supabase = createSupabaseClient()
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-          setUser(session?.user ?? null)
-        })
+    if (!isSupabaseConfigured()) {
+      return
+    }
 
-        return () => {
-          if (subscription) {
-            subscription.unsubscribe()
-          }
-        }
+    try {
+      const supabase = createSupabaseClient()
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null)
+      })
+
+      return () => {
+        subscription?.unsubscribe()
       }
     } catch (error) {
-      // Silently fail if Supabase is not configured
       console.debug('Supabase auth subscription skipped')
     }
   }, [])

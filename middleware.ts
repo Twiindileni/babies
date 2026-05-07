@@ -1,16 +1,23 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from './lib/supabase/env'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   
   // Skip auth check if Supabase is not configured yet
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_project_url_here') {
+  if (!isSupabaseConfigured()) {
     return res
   }
 
-  const supabase = createMiddlewareClient({ req, res })
+  const supabase = createMiddlewareClient(
+    { req, res },
+    {
+      supabaseUrl: getSupabaseUrl(),
+      supabaseKey: getSupabaseAnonKey(),
+    }
+  )
   
   try {
     const {

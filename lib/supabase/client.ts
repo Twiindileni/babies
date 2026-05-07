@@ -1,23 +1,29 @@
 import { createClient } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from './env'
 
 let browserClient: ReturnType<typeof createClientComponentClient> | null = null
 
 export const createSupabaseClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  const supabaseUrl = getSupabaseUrl()
+  const supabaseAnonKey = getSupabaseAnonKey()
 
-  if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your_supabase_project_url_here') {
-    console.warn('⚠️ Missing Supabase environment variables. Please add them to .env.local')
+  if (!isSupabaseConfigured()) {
+    console.warn(
+      '⚠️ Missing Supabase env: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY).'
+    )
     return createClient(
       supabaseUrl || 'https://placeholder.supabase.co',
       supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTIwMDAsImV4cCI6MTk2MDc2ODAwMH0.placeholder'
     ) as ReturnType<typeof createClientComponentClient>
   }
 
-  // Use auth-helpers client so sessions are mirrored in cookies for middleware.
+  // Pass explicit URL/key so publishable-key-only deploys work with auth-helpers.
   if (!browserClient) {
-    browserClient = createClientComponentClient()
+    browserClient = createClientComponentClient({
+      supabaseUrl,
+      supabaseKey: supabaseAnonKey,
+    })
   }
 
   return browserClient
@@ -25,8 +31,7 @@ export const createSupabaseClient = () => {
 
 // For server-side usage
 export const createSupabaseServerClient = () => {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const url = getSupabaseUrl()
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || getSupabaseAnonKey()
+  return createClient(url, key)
 }

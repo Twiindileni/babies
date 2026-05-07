@@ -25,6 +25,10 @@ export default function LoginPage() {
 
       if (error) throw error
 
+      if (!data.user) {
+        throw new Error('Login succeeded but no user was returned.')
+      }
+
       // Prefer role from app_metadata for manually created Supabase users.
       const roleFromMetadata = data.user.app_metadata?.role as string | undefined
 
@@ -37,13 +41,12 @@ export default function LoginPage() {
       const role = userData?.role || roleFromMetadata || 'parent'
 
       toast.success('Login successful!')
-      
-      // Redirect based on role
-      if (role === 'admin') {
-        router.push('/admin/dashboard')
-      } else {
-        router.push('/parent/dashboard')
-      }
+
+      const target = role === 'admin' ? '/admin/dashboard' : '/parent/dashboard'
+      // Refresh server-side session/cookies, then navigate so middleware sees the session.
+      router.refresh()
+      // Full navigation avoids rare race where client chunk + cookie write lag causes a redirect loop.
+      window.location.assign(target)
     } catch (error: any) {
       const isEmailConfirmError =
         typeof error?.message === 'string' &&
