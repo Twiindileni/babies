@@ -13,6 +13,13 @@ const nextConfig = {
       },
     ],
   },
+  /** Windows: avoids corrupt `.next` / PackFileCacheStrategy when two dev servers or AV lock files. */
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.cache = false
+    }
+    return config
+  },
 }
 
 module.exports = nextConfig
