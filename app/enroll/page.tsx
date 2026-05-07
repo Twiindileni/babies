@@ -209,6 +209,31 @@ export default function EnrollPage() {
         .registration-fee { display:inline-block; background:var(--light-red); color:var(--secondary-red); border:2px dashed var(--secondary-red); border-radius:999px; padding:.6rem 1rem; font-weight:600; }
         .form-section { border:2px solid #e2e8f0; border-radius:14px; padding:1.25rem; margin-bottom:1.25rem; background:#fff; }
         .form-section h3 { color: var(--accent-brown); font-size:1.25rem; border-bottom:2px solid var(--accent-brown); padding-bottom:.5rem; margin-bottom:1rem; }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          .enroll-shell {
+            padding: 1.5rem 1rem;
+            border-radius: 15px;
+          }
+          .form-header h1 {
+            font-size: 1.75rem;
+          }
+          .registration-fee {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.8rem;
+          }
+          .form-section {
+            padding: 1rem;
+          }
+          .form-section h3 {
+            font-size: 1.1rem;
+          }
+          .form-check-inline {
+            display: block;
+            margin-bottom: 0.5rem;
+          }
+        }
       `}</style>
     </div>
   )

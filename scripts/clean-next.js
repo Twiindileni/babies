@@ -1,16 +1,10 @@
 /**
- * Remove local Next output dirs (project + optional Windows external cache).
+ * Remove local Next output dirs (project + Windows dev external cache + legacy paths).
  */
 const fs = require('fs')
-const path = require('path')
-const os = require('os')
+const { dirsToClean } = require('./next-dev-dist')
 
-const dirs = [
-  path.join(process.cwd(), '.next'),
-  path.join(os.homedir(), '.cache', 'babies-todds-daycare-next'),
-]
-
-for (const dir of dirs) {
+for (const dir of dirsToClean()) {
   try {
     fs.rmSync(dir, { recursive: true, force: true })
     console.log('Removed:', dir)

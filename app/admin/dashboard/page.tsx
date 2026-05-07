@@ -15,7 +15,7 @@ type Counts = {
   announcements: number
 }
 
-type DashboardTab = 'overview' | 'applications' | 'children' | 'payments' | 'announcements'
+type DashboardTab = 'overview' | 'parents' | 'applications' | 'children' | 'payments' | 'announcements'
 
 export default function AdminDashboardPage() {
   const [counts, setCounts] = useState<Counts>({ parents: 0, children: 0, applications: 0, payments: 0, announcements: 0 })
@@ -65,8 +65,8 @@ export default function AdminDashboardPage() {
             <div className="row g-4 mb-4">
               <div className="col-md-4">
                 <div 
-                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'overview' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
-                  onClick={() => setActiveTab('overview')}
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'parents' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  onClick={() => setActiveTab('parents')}
                 >
                   <div className="card-body p-4 d-flex align-items-center gap-4">
                     <div className="w-14 h-14 rounded-full bg-[#E8F5E4] text-[#4E7B38] flex items-center justify-center shrink-0 fs-3">
@@ -157,9 +157,38 @@ export default function AdminDashboardPage() {
                 <div className="card border-0 shadow-sm rounded-3xl p-5 text-center bg-gray-50">
                   <i className="fas fa-chart-line fa-3x text-gray-300 mb-3"></i>
                   <h4 className="text-gray-500">Dashboard Overview</h4>
-                  <p className="text-gray-400">
-                    Use the stat cards above to jump to children, applications, payments, or announcements.
+                  <p className="text-gray-400 mb-4">
+                    Use the stat cards above to manage parents, children, applications, payments, and announcements.
                   </p>
+                  <Link href="/admin/parents" className="btn btn-outline-primary">
+                    <i className="fas fa-user-plus me-2"></i>
+                    Add parent portal accounts
+                  </Link>
+                </div>
+              )}
+
+              {activeTab === 'parents' && (
+                <div className="card border-0 shadow-sm rounded-3xl p-5 text-center bg-gray-50">
+                  <i className="fas fa-users fa-3x text-[#4E7B38] mb-3"></i>
+                  <h4 className="text-gray-700">Parents &amp; portal login</h4>
+                  <p className="text-gray-500 mb-4">
+                    Create Supabase logins and link them to parent records so families can sign in and use the
+                    dashboard, payments, and messages.
+                  </p>
+                  <p className="small text-muted mb-4">
+                    Needs <code className="bg-white px-1 rounded">SUPABASE_SERVICE_ROLE_KEY</code> in{' '}
+                    <code className="bg-white px-1 rounded">.env.local</code> (never expose in the browser).
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-link btn-sm text-muted mb-2 d-block mx-auto"
+                    onClick={() => setActiveTab('overview')}
+                  >
+                    ← Back to overview
+                  </button>
+                  <Link href="/admin/parents" className="btn btn-primary">
+                    Open parents management
+                  </Link>
                 </div>
               )}
               

@@ -187,3 +187,95 @@ body {
   opacity: 0.6;
   animation: pulse-soft 8s infinite alternate;
 }
+
+/* Responsiveness & Media Queries */
+@media (max-width: 1024px) {
+  body {
+    padding-top: 70px;
+  }
+  
+  .section-title {
+    @apply mb-12;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --padding-container: 1.5rem;
+  }
+
+  body {
+    padding-top: 65px;
+  }
+
+  h1.display-3 {
+    @apply text-4xl !important;
+  }
+
+  h2.display-4 {
+    @apply text-3xl !important;
+  }
+
+  .section-title {
+    @apply mb-10 text-3xl;
+  }
+
+  .card {
+    @apply p-6 rounded-[1.5rem];
+  }
+
+  .btn-primary, .btn-secondary, .btn-outline-primary {
+    @apply px-6 py-2.5 text-base;
+  }
+
+  .blob-shape {
+    @apply w-64 h-64 blur-[40px] opacity-40;
+  }
+  
+  /* Improve mobile navigation spacing */
+  .navbar-collapse {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .nav-link {
+    @apply py-3 px-6 text-lg;
+  }
+}
+
+@media (max-width: 480px) {
+  h1.display-3 {
+    @apply text-3xl !important;
+  }
+
+  .lead {
+    @apply text-lg !important;
+  }
+
+  .container {
+    @apply px-4;
+  }
+  
+  .card {
+    @apply p-5;
+  }
+  
+  /* Stack buttons on mobile if needed */
+  .flex-wrap.gap-4 {
+    @apply flex-col w-full;
+  }
+  
+  .flex-wrap.gap-4 > a, 
+  .flex-wrap.gap-4 > button {
+    @apply w-full text-center;
+  }
+}
+
+/* Fix for small height screens */
+@media (max-height: 700px) {
+  .hero-section {
+    min-height: auto;
+    padding-top: 100px;
+    padding-bottom: 50px;
+  }
+}

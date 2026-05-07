@@ -81,8 +81,9 @@ export default function AdminParentsPage() {
           <div className="card-body p-4">
             <h2 className="h5 mb-3">Add parent portal access</h2>
             <p className="text-muted small mb-3">
-              Creates a Supabase login and links it to a parent record so they can use the parent
-              portal (dashboard, payments, children).
+              Creates a Supabase login and links it to a parent record so they can sign in at{' '}
+              <strong>/login</strong> and open the parent dashboard. If this email already exists as a
+              parent without portal access, their row is updated and login is attached—no duplicate.
             </p>
             <form onSubmit={handleCreateParent} className="row g-3">
               <div className="col-md-6">

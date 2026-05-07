@@ -104,6 +104,22 @@ export async function POST(request: Request) {
   let newUserId: string | null = null
 
   try {
+    const { data: existingParent, error: existingErr } = await admin
+      .from('parents')
+      .select('id, user_id')
+      .eq('email', email)
+      .maybeSingle()
+
+    if (existingErr) {
+      return NextResponse.json({ error: existingErr.message }, { status: 400 })
+    }
+    if (existingParent?.user_id) {
+      return NextResponse.json(
+        { error: 'This email already has parent portal access. Use password reset if they forgot it.' },
+        { status: 400 }
+      )
+    }
+
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email,
       password,
@@ -130,6 +146,30 @@ export async function POST(request: Request) {
     if (usersErr) {
       await admin.auth.admin.deleteUser(newUserId)
       return NextResponse.json({ error: usersErr.message }, { status: 400 })
+    }
+
+    if (existingParent) {
+      const { data: parentRow, error: parentErr } = await admin
+        .from('parents')
+        .update({
+          first_name,
+          last_name,
+          phone,
+          address,
+          user_id: newUserId,
+          status: 'Active',
+        })
+        .eq('id', existingParent.id)
+        .select()
+        .single()
+
+      if (parentErr) {
+        await admin.from('users').delete().eq('id', newUserId)
+        await admin.auth.admin.deleteUser(newUserId)
+        return NextResponse.json({ error: parentErr.message }, { status: 400 })
+      }
+
+      return NextResponse.json({ parent: parentRow, userId: newUserId })
     }
 
     const { data: parentRow, error: parentErr } = await admin
