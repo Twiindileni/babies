@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <pattern id="toys" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+            <!-- Teddy Bear -->
+            <path d="M25,15 Q20,10 15,15 Q10,20 15,25 Q20,30 25,25 Q30,20 25,15" fill="#8CC63F" opacity="0.1"/>
+            <!-- Ball -->
+            <circle cx="40" cy="40" r="8" fill="#FF5B5B" opacity="0.1"/>
+            <!-- Star -->
+            <path d="M10,40 L12,35 L7,38 L13,38 L8,35 Z" fill="#FFD700" opacity="0.1"/>
+            <!-- Building Block -->
+            <rect x="35" y="10" width="10" height="10" rx="2" fill="#8B4513" opacity="0.1"/>
+        </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#toys)"/>
+</svg> 
