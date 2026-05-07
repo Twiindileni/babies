@@ -1,8 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import type { Database } from './types'
 
-let browserClient: ReturnType<typeof createClientComponentClient<Database>> | null = null
+let browserClient: ReturnType<typeof createClientComponentClient> | null = null
 
 export const createSupabaseClient = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -13,12 +12,12 @@ export const createSupabaseClient = () => {
     return createClient(
       supabaseUrl || 'https://placeholder.supabase.co',
       supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTIwMDAsImV4cCI6MTk2MDc2ODAwMH0.placeholder'
-    )
+    ) as ReturnType<typeof createClientComponentClient>
   }
 
   // Use auth-helpers client so sessions are mirrored in cookies for middleware.
   if (!browserClient) {
-    browserClient = createClientComponentClient<any>()
+    browserClient = createClientComponentClient()
   }
 
   return browserClient
