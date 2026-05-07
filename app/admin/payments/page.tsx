@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { createSupabaseClient } from '@/lib/supabase/client'
 import { PortalTabs } from '@/components/portal/PortalTabs'
 import type { Database } from '@/lib/supabase/types'
+import { fetchAdminParents } from '@/lib/api/admin-parents'
 import toast from 'react-hot-toast'
 
 type PaymentRow = Database['public']['Tables']['payments']['Row']
@@ -27,6 +28,7 @@ export default function AdminPaymentsPage() {
   const [parents, setParents] = useState<ParentRow[]>([])
   const [childOptions, setChildOptions] = useState<ChildRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [parentsLoading, setParentsLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const [parentId, setParentId] = useState('')
@@ -63,15 +65,16 @@ export default function AdminPaymentsPage() {
   }
 
   const loadParents = async () => {
-    const { data, error } = await supabase
-      .from('parents')
-      .select('*')
-      .order('last_name', { ascending: true })
-    if (error) {
-      toast.error(error.message)
-      return
+    setParentsLoading(true)
+    try {
+      const data = await fetchAdminParents()
+      setParents(data)
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Could not load parents')
+      setParents([])
+    } finally {
+      setParentsLoading(false)
     }
-    setParents(data ?? [])
   }
 
   useEffect(() => {
@@ -212,8 +215,12 @@ export default function AdminPaymentsPage() {
                   required
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
+                  onFocus={() => void loadParents()}
+                  disabled={parentsLoading}
                 >
-                  <option value="">Select parent…</option>
+                  <option value="">
+                    {parentsLoading ? 'Loading parents…' : 'Select parent…'}
+                  </option>
                   {parents.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.last_name}, {p.first_name} — {p.email}

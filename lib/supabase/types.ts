@@ -10,7 +10,10 @@ export type Database = {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['users']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Insert: Omit<
+          Database['public']['Tables']['users']['Row'],
+          'created_at' | 'updated_at'
+        >
         Update: Partial<Database['public']['Tables']['users']['Insert']>
       }
       parents: {
@@ -25,6 +28,7 @@ export type Database = {
           status: 'Active' | 'Inactive' | null
           payment_status: 'Current' | 'Pending' | 'Overdue' | null
           owing_amount: number | null
+          user_id: string | null
           created_at: string
           updated_at: string
         }
