@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createSupabaseClient } from '@/lib/supabase/client'
 import { PortalTabs } from '@/components/portal/PortalTabs'
 import { AdminApplicationsTab } from '@/components/admin/AdminApplicationsTab'
 import { AdminChildrenTab } from '@/components/admin/AdminChildrenTab'
 import { AdminMessagesTab } from '@/components/admin/AdminMessagesTab'
+import { fetchAdminDashboardCounts } from '@/lib/api/admin-stats'
+import toast from 'react-hot-toast'
 
 type Counts = {
   parents: number
@@ -23,38 +24,21 @@ export default function AdminDashboardPage() {
   const [counts, setCounts] = useState<Counts>({ parents: 0, children: 0, applications: 0, payments: 0, announcements: 0, messages: 0 })
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
-  const [supabase] = useState(() => createSupabaseClient())
 
   useEffect(() => {
     const load = async () => {
-      const [
-        { count: parents }, 
-        { count: children }, 
-        { count: applications }, 
-        { count: payments }, 
-        { count: announcements },
-        { count: messages }
-      ] = await Promise.all([
-          supabase.from('parents').select('*', { count: 'exact', head: true }),
-          supabase.from('children').select('*', { count: 'exact', head: true }),
-          supabase.from('enrollment_applications').select('*', { count: 'exact', head: true }),
-          supabase.from('payments').select('*', { count: 'exact', head: true }),
-          supabase.from('announcements').select('*', { count: 'exact', head: true }),
-          supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
-        ])
-
-      setCounts({
-        parents: parents ?? 0,
-        children: children ?? 0,
-        applications: applications ?? 0,
-        payments: payments ?? 0,
-        announcements: announcements ?? 0,
-        messages: messages ?? 0,
-      })
-      setLoading(false)
+      try {
+        const nextCounts = await fetchAdminDashboardCounts()
+        setCounts(nextCounts)
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Failed to load dashboard data'
+        toast.error(message)
+      } finally {
+        setLoading(false)
+      }
     }
-    load()
-  }, [supabase])
+    void load()
+  }, [])
 
   return (
     <>
