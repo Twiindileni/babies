@@ -32,10 +32,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "D:\\Users\\tomas\\.cache\\babies-todds-daycare-next/types/**/*.ts",
-    "D:\\Users\\tomas\\.cache\\babies-todds-daycare-next/types/**/*.ts",
-    "..\\.next-dev-external/types/**/*.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

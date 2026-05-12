@@ -6,6 +6,7 @@ import { createSupabaseClient } from '@/lib/supabase/client'
 import { PortalTabs } from '@/components/portal/PortalTabs'
 import { AdminApplicationsTab } from '@/components/admin/AdminApplicationsTab'
 import { AdminChildrenTab } from '@/components/admin/AdminChildrenTab'
+import { AdminMessagesTab } from '@/components/admin/AdminMessagesTab'
 
 type Counts = {
   parents: number
@@ -13,25 +14,33 @@ type Counts = {
   applications: number
   payments: number
   announcements: number
+  messages: number
 }
 
-type DashboardTab = 'overview' | 'parents' | 'applications' | 'children' | 'payments' | 'announcements'
+type DashboardTab = 'overview' | 'parents' | 'applications' | 'children' | 'payments' | 'announcements' | 'messages'
 
 export default function AdminDashboardPage() {
-  const [counts, setCounts] = useState<Counts>({ parents: 0, children: 0, applications: 0, payments: 0, announcements: 0 })
+  const [counts, setCounts] = useState<Counts>({ parents: 0, children: 0, applications: 0, payments: 0, announcements: 0, messages: 0 })
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
   const [supabase] = useState(() => createSupabaseClient())
 
   useEffect(() => {
     const load = async () => {
-      const [{ count: parents }, { count: children }, { count: applications }, { count: payments }, { count: announcements }] =
-        await Promise.all([
+      const [
+        { count: parents }, 
+        { count: children }, 
+        { count: applications }, 
+        { count: payments }, 
+        { count: announcements },
+        { count: messages }
+      ] = await Promise.all([
           supabase.from('parents').select('*', { count: 'exact', head: true }),
           supabase.from('children').select('*', { count: 'exact', head: true }),
           supabase.from('enrollment_applications').select('*', { count: 'exact', head: true }),
           supabase.from('payments').select('*', { count: 'exact', head: true }),
           supabase.from('announcements').select('*', { count: 'exact', head: true }),
+          supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
         ])
 
       setCounts({
@@ -40,6 +49,7 @@ export default function AdminDashboardPage() {
         applications: applications ?? 0,
         payments: payments ?? 0,
         announcements: announcements ?? 0,
+        messages: messages ?? 0,
       })
       setLoading(false)
     }
@@ -61,11 +71,11 @@ export default function AdminDashboardPage() {
           </div>
         ) : (
           <>
-            {/* Stat Cards - Interactive */}
+            {/* Stat Cards - Row 1 */}
             <div className="row g-4 mb-4">
               <div className="col-md-4">
                 <div 
-                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'parents' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer h-100 ${activeTab === 'parents' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
                   onClick={() => setActiveTab('parents')}
                 >
                   <div className="card-body p-4 d-flex align-items-center gap-4">
@@ -82,7 +92,7 @@ export default function AdminDashboardPage() {
 
               <div className="col-md-4">
                 <div 
-                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'children' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer h-100 ${activeTab === 'children' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
                   onClick={() => setActiveTab('children')}
                 >
                   <div className="card-body p-4 d-flex align-items-center gap-4">
@@ -99,7 +109,7 @@ export default function AdminDashboardPage() {
 
               <div className="col-md-4">
                 <div 
-                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'applications' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer h-100 ${activeTab === 'applications' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
                   onClick={() => setActiveTab('applications')}
                 >
                   <div className="card-body p-4 d-flex align-items-center gap-4">
@@ -115,10 +125,11 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
+            {/* Stat Cards - Row 2 */}
             <div className="row g-4 mb-5">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <div 
-                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'payments' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer h-100 ${activeTab === 'payments' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
                   onClick={() => setActiveTab('payments')}
                 >
                   <div className="card-body p-4 d-flex align-items-center gap-4">
@@ -133,9 +144,9 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <div 
-                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer ${activeTab === 'announcements' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer h-100 ${activeTab === 'announcements' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
                   onClick={() => setActiveTab('announcements')}
                 >
                   <div className="card-body p-4 d-flex align-items-center gap-4">
@@ -149,6 +160,23 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="col-md-4">
+                <div 
+                  className={`card border-0 shadow-sm rounded-3xl overflow-hidden transition-all cursor-pointer h-100 ${activeTab === 'messages' ? 'ring-2 ring-[#4E7B38]' : 'hover:shadow-md'}`}
+                  onClick={() => setActiveTab('messages')}
+                >
+                  <div className="card-body p-4 d-flex align-items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-[#F3E5F5] text-[#7B1FA2] flex items-center justify-center shrink-0 fs-3">
+                      <i className="fas fa-envelope-open-text"></i>
+                    </div>
+                    <div>
+                      <h6 className="text-gray-500 font-bold text-uppercase tracking-wider fs-7 mb-1">Messages</h6>
+                      <p className="display-6 font-black text-gray-800 mb-0">{counts.messages}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Dashboard Tabs Content */}
@@ -158,12 +186,18 @@ export default function AdminDashboardPage() {
                   <i className="fas fa-chart-line fa-3x text-gray-300 mb-3"></i>
                   <h4 className="text-gray-500">Dashboard Overview</h4>
                   <p className="text-gray-400 mb-4">
-                    Use the stat cards above to manage parents, children, applications, payments, and announcements.
+                    Use the stat cards above to manage parents, children, applications, payments, announcements, and messages.
                   </p>
-                  <Link href="/admin/parents" className="btn btn-outline-primary">
-                    <i className="fas fa-user-plus me-2"></i>
-                    Add parent portal accounts
-                  </Link>
+                  <div className="d-flex flex-wrap justify-content-center gap-3">
+                    <Link href="/admin/parents" className="btn btn-outline-primary rounded-xl px-4">
+                      <i className="fas fa-user-plus me-2"></i>
+                      Manage parent portal accounts
+                    </Link>
+                    <button onClick={() => setActiveTab('messages')} className="btn btn-primary rounded-xl px-4">
+                      <i className="fas fa-envelope me-2"></i>
+                      View Contact Messages
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -186,7 +220,7 @@ export default function AdminDashboardPage() {
                   >
                     ← Back to overview
                   </button>
-                  <Link href="/admin/parents" className="btn btn-primary">
+                  <Link href="/admin/parents" className="btn btn-primary rounded-xl px-4">
                     Open parents management
                   </Link>
                 </div>
@@ -196,6 +230,8 @@ export default function AdminDashboardPage() {
               
               {activeTab === 'children' && <AdminChildrenTab />}
 
+              {activeTab === 'messages' && <AdminMessagesTab />}
+
               {activeTab === 'payments' && (
                 <div className="card border-0 shadow-sm rounded-3xl p-5 text-center bg-gray-50">
                   <i className="fas fa-wallet fa-3x text-[#2E7D32] mb-3"></i>
@@ -203,7 +239,7 @@ export default function AdminDashboardPage() {
                   <p className="text-gray-500 mb-4">
                     Record tuition and fees, link them to a parent and child, and update balances.
                   </p>
-                  <Link href="/admin/payments" className="btn btn-primary">
+                  <Link href="/admin/payments" className="btn btn-primary rounded-xl px-4">
                     Open payments
                   </Link>
                 </div>
@@ -214,7 +250,7 @@ export default function AdminDashboardPage() {
                   <i className="fas fa-bullhorn fa-3x text-[#D64545] mb-3"></i>
                   <h4 className="text-gray-700">Announcements</h4>
                   <p className="text-gray-500 mb-4">Create and manage updates for parents and staff.</p>
-                  <Link href="/admin/announcements" className="btn btn-primary">
+                  <Link href="/admin/announcements" className="btn btn-primary rounded-xl px-4">
                     Open Announcements
                   </Link>
                 </div>
@@ -226,3 +262,4 @@ export default function AdminDashboardPage() {
     </>
   )
 }
+

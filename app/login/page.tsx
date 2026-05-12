@@ -32,11 +32,15 @@ export default function LoginPage() {
       // Prefer role from app_metadata for manually created Supabase users.
       const roleFromMetadata = data.user.app_metadata?.role as string | undefined
 
-      const { data: userData } = await supabase
+      const { data: userData, error: userError } = await supabase
         .from('users')
         .select('role')
         .eq('id', data.user.id)
         .maybeSingle()
+
+      if (userError) {
+        console.error('Error fetching user role:', userError)
+      }
 
       const role = userData?.role || roleFromMetadata || 'parent'
 
